@@ -35,6 +35,7 @@ KERNEL_DIR=`pwd`
 REPACK_DIR=$HOME/AnyKernel3alioth
 ZIP_MOVE=$HOME/Boolx
 TOOLCHAINS=$HOME/toolchains/boolx-clang
+SAVEHERE=$HOME/toolchains
 CONFIG=out/.config
 KERNEL=out/arch/arm64/boot/Image.gz
 DTBO=out/arch/arm64/boot/dtbo.img
@@ -141,7 +142,9 @@ case "$cchoice" in
 	x86|X86 )
 		echo
 		echo "Downloading Boolx-clang for X86 host."
-		git clone https://gitlab.com/onettboots/boolx-clang.git -b Clang-17.0_x86 $TOOLCHAINS
+		wget https://github.com/onettboots/boolx-clang-build/releases/download/Boolx-21/boolx-clang21.tar.gz -P $SAVEHERE
+		cd $SAVEHERE
+		tar -xf boolx-clang21.tar.gz
 		break
 		;;
 	* )
