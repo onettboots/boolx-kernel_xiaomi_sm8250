@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include <linux/delay.h>
@@ -39,7 +38,7 @@
 #define SCM_DLOAD_FULLDUMP		0X10
 #define SCM_EDLOAD_MODE			0X01
 #define SCM_DLOAD_CMD			0x10
-#define SCM_DLOAD_MINIDUMP		0X40
+#define SCM_DLOAD_MINIDUMP		0X20
 #define SCM_DLOAD_BOTHDUMPS	(SCM_DLOAD_MINIDUMP | SCM_DLOAD_FULLDUMP)
 
 #define DL_MODE_PROP "qcom,msm-imem-download_mode"
@@ -67,8 +66,8 @@ static void scm_disable_sdi(void);
 static int download_mode = 1;
 static struct kobject dload_kobj;
 
-int in_panic = 0;
-static int dload_type = SCM_DLOAD_BOTHDUMPS;
+static int in_panic;
+static int dload_type = SCM_DLOAD_FULLDUMP;
 static void *dload_mode_addr;
 static bool dload_mode_enabled;
 static void *emergency_dload_mode_addr;
@@ -489,13 +488,12 @@ static void halt_spmi_pmic_arbiter(void)
 static void msm_restart_prepare(const char *cmd)
 {
 	bool need_warm_reset = false;
-	/* Write download mode flags if we're panic'ing
-	 * Write download mode flags if restart_mode says so
+	/* Write download mode flags if restart_mode says so
 	 * Kill download mode if master-kill switch is set
 	 */
 
 	set_dload_mode(download_mode &&
-			(in_panic || restart_mode == RESTART_DLOAD));
+			(restart_mode == RESTART_DLOAD));
 
 	if (qpnp_pon_check_hard_reset_stored()) {
 		/* Set warm reset as true when device is in dload mode */
@@ -512,14 +510,20 @@ static void msm_restart_prepare(const char *cmd)
 		pr_info("Forcing a warm reset of the system\n");
 
 	/* Hard reset the PMIC unless memory contents must be maintained. */
-	if (force_warm_reboot || need_warm_reset || in_panic)
+	if (force_warm_reboot || need_warm_reset)
 		qpnp_pon_system_pwr_off(PON_POWER_OFF_WARM_RESET);
 	else
 		qpnp_pon_system_pwr_off(PON_POWER_OFF_HARD_RESET);
 
 	if (in_panic) {
-		qpnp_pon_set_restart_reason(PON_RESTART_REASON_PANIC);
-	} else if (cmd != NULL) {
+		// Reboot to recovery
+		qpnp_pon_set_restart_reason(
+			PON_RESTART_REASON_RECOVERY);
+		__raw_writel(0x77665502, restart_reason);
+		goto finish_set_restart_reason;
+	}
+
+	if (cmd != NULL) {
 		if (!strncmp(cmd, "bootloader", 10)) {
 			qpnp_pon_set_restart_reason(
 				PON_RESTART_REASON_BOOTLOADER);
@@ -557,7 +561,6 @@ static void msm_restart_prepare(const char *cmd)
 				__raw_writel(0x6f656d00 | (code & 0xff),
 					     restart_reason);
 		} else if (!strncmp(cmd, "edl", 3)) {
-			if (0)
 			enable_emergency_dload_mode();
 		} else {
 			qpnp_pon_set_restart_reason(PON_RESTART_REASON_NORMAL);
@@ -568,6 +571,7 @@ static void msm_restart_prepare(const char *cmd)
 		__raw_writel(0x77665501, restart_reason);
 	}
 
+finish_set_restart_reason:
 	flush_cache_all();
 
 	/*outer_flush_all is not supported by 64bit kernel*/
