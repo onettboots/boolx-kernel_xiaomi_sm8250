@@ -99,20 +99,27 @@ function restore_miui {
 
 function upload()
 {
-curl bashupload.com -T $ZIP_NAME*.zip
-ziped=$ZIP_MOVE/`echo $ZIP_NAME`.zip
-upl=$kernel_dir/upl.sh
-rm -rf $upl
-cd $kernel_dir
-chmod +x $upl
-sed -i "4i\FILE_PATH=$ziped" $upl
-BUILDDATE=`date +"%Y-%m-%d"`
-sed -i '5i\CAPTION="* Build Date: '$BUILDDATE'' $upl
-sed -i '6i\* Kernel Version: v.4.19.328' $upl
-sed -i '7i\* KSU+NEXT: v.12441' $upl
-sed -i '8i\* SUSFS: v1.5.5' $upl
-sed -i '9i\* Type: AOSP' $upl
-sed -i '10i\* Changes: https://github.com/onettboots/kernel_xiaomi_sm8250_n0/commits/new"' $upl
+		curl bashupload.com -T $ZIP_NAME*.zip
+}
+
+function upload_boolx_action()
+{
+		ziped=$ZIP_MOVE/`echo $ZIP_NAME`.zip
+		upl=$kernel_dir/upl.sh
+		rm -rf $upl
+		cd $kernel_dir
+		#wget
+		chmod +x $upl
+		sed -i "4i\FILE_PATH=$ziped" $upl
+		BUILDDATE=`date +"%Y-%m-%d"`
+		sed -i '5i\CAPTION="* Build Date: '$BUILDDATE'' $upl
+		sed -i '6i\* Kernel Version: v.4.19.328' $upl
+		sed -i '7i\* KSU+NEXT: v.12469' $upl
+		sed -i '8i\* SUSFS: v1.5.5' $upl
+		sed -i '9i\* Type: '$variant'' $upl
+		sed -i '10i\* Changes: https://github.com/onettboots/boolx-kernel_xiaomi_sm8250/commits/dev/daily' $upl
+		sed -i '11i\* Clang: Boolx Clang 21.0.0"' $upl
+		bash $upl
 }
 
 DATE_START=$(date +"%s")
@@ -208,7 +215,8 @@ echo -e "${green}"
 echo "------------------"
 echo "CLEAN OPTIONS:"
 echo "------------------"
-while read -p "Do you want to clean stuffs (y/n)? " cchoice
+if [ -d $objdir ]; then
+    while read -p "Do you want to clean build (y/n)? " cchoice
 do
 case "$cchoice" in
 	y|Y )
@@ -231,6 +239,12 @@ case "$cchoice" in
 		;;
 esac
 done
+   echo -e "${restore}"
+else
+   echo -e "${green}"
+   echo -e "${restore}"
+fi
+
 echo -e "${restore}"
 
 if [ -f $CONFIG ]; then
