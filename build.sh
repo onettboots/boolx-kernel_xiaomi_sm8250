@@ -206,7 +206,7 @@ case "$variant" in
 esac
 done
 
-BASE_AK_VER="Bool-X-Alioth-V1.0-N0base-"
+BASE_AK_VER="Bool-X-Alioth-V1.1-Durjana-"
 DATE=`date +"%Y%m%d-%H%M"`
 AK_VER="$BASE_AK_VER$variant"
 ZIP_NAME="$AK_VER"-"$DATE"
