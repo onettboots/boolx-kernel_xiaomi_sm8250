@@ -2978,15 +2978,11 @@ again:
 			path[k].p_block =
 				le16_to_cpu(path[k].p_hdr->eh_entries)+1;
 	} else {
-		if (depth + 1 <= ARRAY_SIZE(path_onstack)) {
-			path = path_onstack;
-			memset(path, 0, sizeof(*path) * (depth + 1));
-		} else {
-			path = kcalloc(depth + 1, sizeof(*path), GFP_NOFS | __GFP_NOFAIL);
-			if (path == NULL) {
-				ext4_journal_stop(handle);
-				return -ENOMEM;
-			}
+		path = kcalloc(depth + 1, sizeof(struct ext4_ext_path),
+			       GFP_NOFS | __GFP_NOFAIL);
+		if (path == NULL) {
+			ext4_journal_stop(handle);
+			return -ENOMEM;
 		}
 		path[0].p_maxdepth = path[0].p_depth = depth;
 		path[0].p_hdr = ext_inode_hdr(inode);
