@@ -116,7 +116,7 @@ function upload_boolx_action()
 		sed -i '6i\* Kernel Version: v.4.19.328' $upl
 		sed -i '7i\* KSU+NEXT: v.12469' $upl
 		sed -i '8i\* SUSFS: v1.5.5' $upl
-		sed -i '9i\* Type: '$variant'' $upl
+		sed -i '9i\* Type: '$variant'-Nethunter' $upl
 		sed -i '10i\* Changes: https://github.com/onettboots/boolx-kernel_xiaomi_sm8250/commits/dev/daily' $upl
 		sed -i '11i\* Clang: Boolx Clang 21.0.0"' $upl
 		bash $upl
@@ -206,7 +206,7 @@ case "$variant" in
 esac
 done
 
-BASE_AK_VER="Bool-X-Alioth-V1.1-Durjana-"
+BASE_AK_VER="Bool-X-Alioth-V1.2-SuperBoolean-Nethunter-"
 DATE=`date +"%Y%m%d-%H%M"`
 AK_VER="$BASE_AK_VER$variant"
 ZIP_NAME="$AK_VER"-"$DATE"
