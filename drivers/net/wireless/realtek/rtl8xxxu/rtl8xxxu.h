@@ -876,7 +876,6 @@ struct rtl8192eu_efuse {
 	u8 serial[0x0b];		/* 0xf5 */
 	u8 res13[0x30];
 	u8 unknown[0x0d];		/* 0x130 */
-	u8 res12[0xc3];
 };
 
 struct rtl8188eu_efuse {
