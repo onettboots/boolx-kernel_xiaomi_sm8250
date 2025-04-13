@@ -1893,30 +1893,8 @@ static const struct attribute_group a6xx_coresight_group = {
 	.attrs = a6xx_coresight_attrs,
 };
 
-static const struct attribute_group *a6xx_coresight_groups[] = {
-	&a6xx_coresight_group,
-	NULL,
-};
-
 static const struct attribute_group a6xx_coresight_group_cx = {
 	.attrs = a6xx_coresight_attrs_cx,
-};
-
-static const struct attribute_group *a6xx_coresight_groups_cx[] = {
-	&a6xx_coresight_group_cx,
-	NULL,
-};
-
-static struct adreno_coresight a6xx_coresight = {
-	.registers = a6xx_coresight_regs,
-	.count = ARRAY_SIZE(a6xx_coresight_regs),
-	.groups = a6xx_coresight_groups,
-};
-
-static struct adreno_coresight a6xx_coresight_cx = {
-	.registers = a6xx_coresight_regs_cx,
-	.count = ARRAY_SIZE(a6xx_coresight_regs_cx),
-	.groups = a6xx_coresight_groups_cx,
 };
 
 static struct adreno_perfcount_register a6xx_perfcounters_cp[] = {
@@ -2771,6 +2749,5 @@ struct adreno_gpudev adreno_a6xx_gpudev = {
 	.sptprac_is_on = a6xx_sptprac_is_on,
 	.ccu_invalidate = a6xx_ccu_invalidate,
 	.perfcounter_update = a6xx_perfcounter_update,
-	.coresight = {&a6xx_coresight, &a6xx_coresight_cx},
 	.clk_set_options = a6xx_clk_set_options,
 };
