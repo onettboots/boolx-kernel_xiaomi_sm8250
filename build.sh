@@ -59,8 +59,8 @@ function build() {
                 CROSS_COMPILE="aarch64-linux-gnu-" \
                 CROSS_COMPILE_ARM32="arm-linux-gnueabi-" \
 		O="${objdir}" ${1} \
-		KBUILD_BUILD_USER="Onett" \
-		KBUILD_BUILD_HOST="Boots" \
+		KBUILD_BUILD_USER="OnettBoots" \
+		KBUILD_BUILD_HOST="People's Front" \
 		dtbo.img \
 		dtb
 }
